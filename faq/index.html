@@ -72,6 +72,8 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../api/">Python API</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../benchmarks/">Benchmarks</a>
+                  </li>
               </ul>
               <p class="caption"><span class="caption-text">Support:</span></p>
               <ul class="current">
@@ -134,7 +136,10 @@
 <p>For server environments without GUI libraries, install the headless variant instead, which depends on <code>opencv-python-headless</code>:</p>
 <pre><code class="language-bash">pip install scenedetect-headless
 </code></pre>
-<p>Both packages ship the same <code>scenedetect</code> Python module -- you only need one.</p>
+<p>For projects that need a different OpenCV variant (e.g. <code>opencv-contrib-python</code>), install <a href="https://pypi.org/project/scenedetect-core/"><code>scenedetect-core</code></a> instead: it provides the library without the CLI and does not declare any OpenCV variant, so you can pair it with whichever one you need:</p>
+<pre><code class="language-bash">pip install scenedetect-core opencv-contrib-python
+</code></pre>
+<p>All of these packages ship the same <code>scenedetect</code> Python module -- install only one of them.</p>
 <h4 id="how-can-i-enable-video-splitting-support">How can I enable video splitting support?</h4>
 <p>Video splitting is performed by <code>ffmpeg</code> (<a href="https://ffmpeg.org/download.html">https://ffmpeg.org/download.html</a>) or <code>mkvmerge</code> (<a href="https://mkvtoolnix.download/downloads.html">https://mkvtoolnix.download/downloads.html</a>) depending on which command line arguments are used. Ensure the tool is available and somewhere in your system's PATH folder.</p>
 <h4 id="how-can-i-fix-the-error-cannot-split-video-due-to-too-many-scenes">How can I fix the error <code>Cannot split video due to too many scenes</code>?</h4>
@@ -153,7 +158,7 @@
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../api/" class="btn btn-neutral float-left" title="Python API"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../benchmarks/" class="btn btn-neutral float-left" title="Benchmarks"><span class="icon icon-circle-arrow-left"></span> Previous</a>
         <a href="../contributing/" class="btn btn-neutral float-right" title="Bugs & Contributing">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
@@ -178,7 +183,7 @@
   <span class="rst-current-version" data-toggle="rst-current-version">
     
     
-      <span><a href="../api/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../benchmarks/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
       <span><a href="../contributing/" style="color: #fcfcfc">Next &raquo;</a></span>
@@ -189,6 +194,7 @@
     <script>var base_url = "..";</script>
     <script src="../js/theme_extra.js"></script>
     <script src="../js/theme.js"></script>
+      <script src="../js/helper.js"></script>
       <script src="../search/main.js"></script>
     <script>
         jQuery(function () {

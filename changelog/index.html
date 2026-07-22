@@ -234,6 +234,8 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../api/">Python API</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../benchmarks/">Benchmarks</a>
+                  </li>
               </ul>
               <p class="caption"><span class="caption-text">Support:</span></p>
               <ul>
@@ -487,7 +489,7 @@
 <li>[bugfix] Update default ffmpeg stream mapping from <code>-map 0</code> to <code>-map 0:v:0 -map 0:a? -map 0:s?</code> <a href="https://github.com/Breakthrough/PySceneDetect/issues/392">#392</a></li>
 </ul>
 <h3 id="063-march-9-2024">0.6.3 (March 9, 2024)</h3>
-<p>In addition to some perfromance improvements with the <code>load-scenes</code> command, this release of PySceneDetect includes a significant amount of bugfixes. Thanks to everyone who contributed to the release, including those who filed bug reports and helped with debugging!</p>
+<p>In addition to some performance improvements with the <code>load-scenes</code> command, this release of PySceneDetect includes a significant amount of bugfixes. Thanks to everyone who contributed to the release, including those who filed bug reports and helped with debugging!</p>
 <p><strong>Program Changes:</strong></p>
 <ul>
 <li>[bugfix] Fix crash for some WebM videos when using <code>save-images</code> with <code>--backend pyav</code> <a href="https://github.com/Breakthrough/PySceneDetect/issues/355">#355</a></li>
@@ -1011,6 +1013,27 @@
 <ul>
 <li>[feature] <code>scenedetect.detect()</code> now accepts a <code>backend</code> keyword argument (<code>"opencv"</code>, <code>"pyav"</code>, or <code>"moviepy"</code>) similar to <code>open_video</code>. Defaults to <code>"opencv"</code>, matching prior behavior.</li>
 <li>[feature] Add <code>expand_scenes_to_bounds()</code> helper in <code>scenedetect.scene_manager</code> to extend a scene list so the first scene starts at a given lower bound and the last scene ends at a given upper bound</li>
+<li>[feature] <code>VideoStream</code> now provides a public read-only <code>decode_failures</code> property reporting the number of frames that failed to decode and were skipped (defaults to 0; populated by the OpenCV and PyAV backends)</li>
+<li>[feature] Add <code>VideoStreamConcat</code> (<code>scenedetect.backends.concat</code>) which concatenates multiple videos into a single continuous stream with a monotonic PTS timeline; <code>open_video()</code> and <code>detect()</code> now accept a list of paths. <code>VideoStreamConcat.map_span()</code> maps spans of the global timeline back to per-source local times</li>
+<li>[bugfix] The PyAV backend (<code>VideoStreamAv</code>) now skips corrupt frames during <code>read()</code> and continues decoding instead of failing, giving up only after 8 consecutive decode failures (matching the OpenCV backend's tolerance behavior)</li>
+<li>[bugfix] The PyAV backend now normalizes presentation times by the stream start time, so files with a delayed start (e.g. from edit lists) report the first frame at <code>position</code> 0, consistent with other backends and with <code>seek()</code></li>
+<li>[bugfix] Comparisons between two <code>FrameTimecode</code> objects that both carry exact presentation times (e.g. positions from VFR videos) and share the same frame rate are now performed exactly using <code>pts</code> and <code>time_base</code> instead of rounded frame numbers. Previously, distinct frames in VFR sections could compare equal or fail strict ordering when their times rounded to the same approximate frame number. Comparisons involving frame- or seconds-based timecodes, plain values (<code>int</code>/<code>float</code>/<code>str</code>), or differing frame rates are unchanged</li>
+<li>[bugfix] Fix image sequence inputs when using OpenCV 5.0</li>
+</ul>
+<h4 id="packaging">Packaging</h4>
+<ul>
+<li>[feature] Add <code>scenedetect-core</code>, a new library-only package with minimal dependencies (<code>numpy</code> only): it does not depend on any specific OpenCV variant, allowing downstream projects to choose their own (e.g. <code>opencv-contrib-python</code>), and does not include the CLI dependencies or the <code>scenedetect</code> command <a href="https://github.com/Breakthrough/PySceneDetect/issues/558">#558</a>. Convenience extras <code>scenedetect-core[opencv]</code> and <code>scenedetect-core[opencv-headless]</code> are provided</li>
+<li>[general] <code>scenedetect</code> and <code>scenedetect-headless</code> are unchanged: they continue to ship the full program (library + CLI) with <code>opencv-python</code> / <code>opencv-python-headless</code> respectively. All three packages provide the same <code>scenedetect</code> module (install or depend only one)</li>
+<li>[feature] Official Docker images are now published to the GitHub Container Registry with the full CLI, all backends, and external tools (ffmpeg, mkvmerge) included, thanks <a href="https://github.com/FNGarvin">@FNGarvin</a> <a href="https://github.com/Breakthrough/PySceneDetect/pull/537">#537</a><ul>
+<li>Example usage (process a video in the current directory):</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-bash">docker run --rm -v &quot;$(pwd):/files&quot; ghcr.io/breakthrough/pyscenedetect -i /files/video.mp4 detect-adaptive split-video -o /files
+</code></pre>
+<h4 id="general">General</h4>
+<ul>
+<li>[general] Benchmark results are now published on the website (<a href="https://www.scenedetect.com/benchmarks/">scenedetect.com/benchmarks</a>), including accuracy at default settings and parameter sweep curves for each detector</li>
 </ul>
               
             </div>
@@ -1052,6 +1075,7 @@
     <script>var base_url = "..";</script>
     <script src="../js/theme_extra.js"></script>
     <script src="../js/theme.js"></script>
+      <script src="../js/helper.js"></script>
       <script src="../search/main.js"></script>
     <script>
         jQuery(function () {
